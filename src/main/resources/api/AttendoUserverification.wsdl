@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- edited with XMLSpy v2020 rel. 2 (http://www.altova.com) by Satish Reddy (Enfo Sweden AB) -->
+<wsdl:definitions xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:http="http://schemas.xmlsoap.org/wsdl/http/" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/" xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:tns="http://new.webservice.namespace" targetNamespace="http://new.webservice.namespace">
+	<wsdl:types>
+		<xs:schema targetNamespace="http://new.webservice.namespace" elementFormDefault="qualified"/>
+	</wsdl:types>
+	<wsdl:message name="UserVerificationRequest">
+		<wsdl:part name="Performer" type="xs:string"/>
+		<wsdl:part name="SubjectOfCareId" type="xs:integer"/>
+		<wsdl:part name="CareUnitHsaIdentity" type="xs:string"/>
+		<wsdl:part name="CareGiverHsaIdentity" type="xs:string"/>
+	</wsdl:message>
+	<wsdl:message name="Response">
+		<wsdl:part name="Allowed" type="xs:boolean"/>
+	</wsdl:message>
+	<wsdl:portType name="UserVerification">
+		<wsdl:operation name="approveUser">
+			<wsdl:input message="tns:UserVerificationRequest"/>
+			<wsdl:output message="tns:Response"/>
+		</wsdl:operation>
+	</wsdl:portType>
+	<wsdl:binding name="NewBinding" type="tns:UserVerification">
+		<soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+		<wsdl:operation name="approveUser">
+			<soap:operation soapAction="urn:#NewOperation"/>
+			<wsdl:input>
+				<soap:body use="encoded"/>
+			</wsdl:input>
+			<wsdl:output>
+				<soap:body use="literal"/>
+			</wsdl:output>
+		</wsdl:operation>
+	</wsdl:binding>
+	<wsdl:service name="Attendo">
+		<wsdl:port name="verifyUser" binding="tns:NewBinding">
+			<soap:address location="http://localhost:8091"/>
+		</wsdl:port>
+	</wsdl:service>
+</wsdl:definitions>
