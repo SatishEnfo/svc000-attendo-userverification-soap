@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema xmlns="http://www.w3.org/2001/XMLSchema" targetNamespace="http://www.example.org/userVerificationRequest" xmlns:tns="http://www.example.org/userVerificationRequest" elementFormDefault="qualified">
+
+   <element name="UserverificationRequest">
+		<complexType>
+			<sequence>
+		<element name="Performer" type="string"/>
+	<element name="SubjectOfCareId" type="int"/>
+	<element name="CareUnitHsaIdentity" type="string"/>
+	<element name="CareGiverHsaIdentity" type="string"/>
+			</sequence>
+		</complexType>
+	</element>
+
+</schema>

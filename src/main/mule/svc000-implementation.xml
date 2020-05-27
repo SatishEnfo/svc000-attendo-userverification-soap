@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:tracking="http://www.mulesoft.org/schema/mule/ee/tracking" xmlns:user-verification-papi="http://www.mulesoft.org/schema/mule/user-verification-papi"
+	xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns:xml-module="http://www.mulesoft.org/schema/mule/xml-module" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/xml-module http://www.mulesoft.org/schema/mule/xml-module/current/mule-xml-module.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.mulesoft.org/schema/mule/user-verification-papi http://www.mulesoft.org/schema/mule/user-verification-papi/current/mule-user-verification-papi.xsd
+http://www.mulesoft.org/schema/mule/ee/tracking http://www.mulesoft.org/schema/mule/ee/tracking/current/mule-tracking-ee.xsd">
+	<user-verification-papi:config name="UserVerification_PAPI_Config" doc:name="UserVerification-PAPI Config" doc:id="91a2a23d-5c21-4b22-936a-ba4da0637820" />
+	<sub-flow name="VerifyUserSubflow" doc:id="f906dfdb-b61f-4c99-8189-185b0fb5d655" >
+		<xml-module:validate-schema doc:name="Validate schema" doc:id="a346c504-0080-480e-b272-565bcfe21f5d" schemas="userVerificationRequest.xsd"/>
+		<ee:transform doc:name="XML to JSON" doc:id="b28c8114-1156-479f-bb3a-f9edb26ce8f2" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+"Performer" : "SEI009",
+"SubjectOfCareId" : "1986726289",
+"CareUnitHsaIdentity" : "KOOR789",
+"CareGiverHsaIdentity" : "HY80H"
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<tracking:custom-event doc:name="BIP Logging-Start" doc:id="1af4cac9-22c5-4f10-b7d5-61026802b845" event-name="Start"/>
+		<user-verification-papi:verifyuser doc:name="invokePAPI-VerifyUser" doc:id="910b6ada-16fb-4a4c-b73d-bd32423d61a4" config-ref="UserVerification_PAPI_Config"/>
+		<ee:transform doc:name="Response Json to Soap" doc:id="4d094a83-d3f1-4876-b260-2b94a78bd945" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/java
+ns soap http://schemas.xmlsoap.org/soap/envelope
+---
+{
+    body: {
+        soap#Response: {
+            Allowed : "true"
+        }
+    } write "application/xml"
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<tracking:custom-event doc:name="BIP Logging-End" doc:id="97387cb3-92ff-4658-9afb-c71e49d2fd03" event-name="End" />
+	</sub-flow>
+</mule>
